@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spain Wildfire Situational Awareness — EFFIS Web GIS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<style>
+  html, body { margin:0; padding:0; height:100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  #map { height: 100vh; width: 100%; }
+  .panel {
+    position: absolute; top: 12px; right: 12px; z-index: 1000;
+    background: rgba(20,20,20,0.92); color: #eee; padding: 14px 16px;
+    border-radius: 8px; width: 260px; box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    font-size: 13px;
+  }
+  .panel h1 { font-size: 15px; margin: 0 0 10px 0; color: #ff7043; }
+  .panel label { display: flex; align-items: center; gap: 8px; margin: 6px 0; cursor: pointer; }
+  .panel input[type=range] { width: 100%; }
+  .panel .note { font-size: 11px; color: #aaa; margin-top: 10px; line-height: 1.4; }
+  .panel select, .panel input[type=date] {
+    width: 100%; padding: 4px; margin: 4px 0 8px 0; background:#333; color:#eee; border:1px solid #555; border-radius:4px;
+  }
+  .legend {
+    position: absolute; bottom: 20px; left: 12px; z-index: 1000;
+    background: rgba(20,20,20,0.92); color:#eee; padding: 10px 14px; border-radius: 8px; font-size: 12px;
+  }
+  .legend div { display:flex; align-items:center; gap:6px; margin:3px 0; }
+  .swatch { width:14px; height:14px; border-radius:3px; display:inline-block; }
+  .status { position:absolute; top:12px; left:12px; z-index:1000; background:rgba(20,20,20,0.92); color:#eee; padding:8px 12px; border-radius:8px; font-size:12px; }
+  .status.ok { border-left: 4px solid #4caf50; }
+  .status.err { border-left: 4px solid #f44336; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div class="panel">
+  <h1>🔥 Layer Controls</h1>
+
+  <label><input type="checkbox" id="toggleFwi" checked> Fire Danger Forecast (EFFIS)</label>
+  <label><input type="checkbox" id="toggleBurnt" checked> Burnt Areas (EFFIS)</label>
+  <label><input type="checkbox" id="toggleFirms" checked> Active Hotspots (NASA FIRMS)</label>
+
+  <div style="margin-top:10px;">
+    <label for="opacity">EFFIS Layer Opacity</label>
+    <input type="range" id="opacity" min="0" max="1" step="0.1" value="0.7">
+  </div>
+
+  <div class="note">
+    EFFIS layers are served live via WMS from <code>maps.effis.emergency.copernicus.eu</code>. If EFFIS is under heavy load during active events, tiles may load slowly or fail — this is a known, server-side limitation, not a bug in this app.
+  </div>
+</div>
+
+<div class="status" id="statusBox">Checking EFFIS server…</div>
+
+<div class="legend">
+  <strong>Fire Danger</strong>
+  <div><span class="swatch" style="background:#2e7d32"></span> Low</div>
+  <div><span class="swatch" style="background:#fdd835"></span> Moderate</div>
+  <div><span class="swatch" style="background:#fb8c00"></span> High</div>
+  <div><span class="swatch" style="background:#c62828"></span> Very High / Extreme</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  // Base map centered on Spain, zoomed to show the active fire regions
+  const map = L.map('map', { zoomControl: true }).setView([40.2, -3.7], 7);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  // --- EFFIS WMS layers ---
+  // Base EFFIS WMS endpoint. Layer names should be confirmed against the
+  // EFFIS "Data and Services" page (each dataset there has a sample working URL
+  // with the exact LAYERS parameter to use).
+  const EFFIS_WMS = 'https://maps.effis.emergency.copernicus.eu/effis';
+
+  const fwiLayer = L.tileLayer.wms(EFFIS_WMS, {
+    layers: 'ecmwf007.fwi',   // Fire Weather Index forecast — confirmed layer name
+    format: 'image/png',
+    transparent: true,
+    version: '1.1.1',
+    opacity: 0.7,
+    attribution: 'EFFIS / Copernicus EMS'
+  });
+
+  const burntLayer = L.tileLayer.wms(EFFIS_WMS, {
+    layers: 'ba.hazard',      // Placeholder — confirm exact name via EFFIS data-and-services page
+    format: 'image/png',
+    transparent: true,
+    version: '1.1.1',
+    opacity: 0.7,
+    attribution: 'EFFIS / Copernicus EMS'
+  });
+
+  fwiLayer.addTo(map);
+  burntLayer.addTo(map);
+
+  // --- NASA FIRMS active fire hotspots (VIIRS, last 24h) ---
+  // Requires a free FIRMS MAP_KEY: https://firms.modaps.eosdis.nasa.gov/api/map_key/
+  const FIRMS_KEY = 'YOUR_FIRMS_MAP_KEY';
+  const firmsLayer = L.tileLayer.wms(
+    `https://firms.modaps.eosdis.nasa.gov/mapserver/wms/fires/${FIRMS_KEY}/`, {
+    layers: 'fires_viirs_snpp_24,fires_viirs_noaa20_24',
+    format: 'image/png',
+    transparent: true,
+    version: '1.1.1',
+    attribution: 'NASA FIRMS'
+  });
+  firmsLayer.addTo(map);
+
+  // --- Layer toggles ---
+  document.getElementById('toggleFwi').addEventListener('change', e => {
+    e.target.checked ? fwiLayer.addTo(map) : map.removeLayer(fwiLayer);
+  });
+  document.getElementById('toggleBurnt').addEventListener('change', e => {
+    e.target.checked ? burntLayer.addTo(map) : map.removeLayer(burntLayer);
+  });
+  document.getElementById('toggleFirms').addEventListener('change', e => {
+    e.target.checked ? firmsLayer.addTo(map) : map.removeLayer(firmsLayer);
+  });
+  document.getElementById('opacity').addEventListener('input', e => {
+    const val = parseFloat(e.target.value);
+    fwiLayer.setOpacity(val);
+    burntLayer.setOpacity(val);
+  });
+
+  // --- Simple EFFIS server health check ---
+  const statusBox = document.getElementById('statusBox');
+  fetch(`${EFFIS_WMS}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities`, { mode: 'no-cors' })
+    .then(() => {
+      statusBox.textContent = 'EFFIS server: reachable';
+      statusBox.className = 'status ok';
+    })
+    .catch(() => {
+      statusBox.textContent = 'EFFIS server: unreachable right now (retry later)';
+      statusBox.className = 'status err';
+    });
+</script>
+
+</body>
+</html>
