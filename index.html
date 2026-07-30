@@ -103,7 +103,7 @@
 
   // --- NASA FIRMS active fire hotspots (VIIRS, last 24h) ---
   // Requires a free FIRMS MAP_KEY: https://firms.modaps.eosdis.nasa.gov/api/map_key/
-  const FIRMS_KEY = 'YOUR_FIRMS_MAP_KEY';
+  const FIRMS_KEY = '95a4e5acadec56a21f0266e233431852';
   const firmsLayer = L.tileLayer.wms(
     `https://firms.modaps.eosdis.nasa.gov/mapserver/wms/fires/${FIRMS_KEY}/`, {
     layers: 'fires_viirs_snpp_24,fires_viirs_noaa20_24',
