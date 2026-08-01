@@ -81,7 +81,8 @@
   const EFFIS_WMS = 'https://maps.effis.emergency.copernicus.eu/effis/fwi/mapserver?';
 
   const fwiLayer = L.tileLayer.wms(EFFIS_WMS, {
-    layers: 'ecmwf007.fwi',   // Fire Weather Index forecast — confirmed layer name
+    //layers: 'ecmwf007.fwi',   // Fire Weather Index forecast — confirmed layer name
+    layers: 'fwi',
     format: 'image/png',
     transparent: true,
     version: '1.1.1',
