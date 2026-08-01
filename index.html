@@ -55,14 +55,7 @@
 
 <div class="status" id="statusBox">Checking EFFIS server…</div>
 
-<!-- <div class="legend">
-  <strong>Fire Danger</strong>
-  <div><span class="swatch" style="background:#2e7d32"></span> Low</div>
-  <div><span class="swatch" style="background:#fdd835"></span> Moderate</div>
-  <div><span class="swatch" style="background:#fb8c00"></span> High</div>
-  <div><span class="swatch" style="background:#c62828"></span> Very High / Extreme</div>
-</div> -->
-
+<!-- Map Legend -->
 <div id="fwi-legend" style="
   position:absolute;
   bottom:20px;
@@ -101,6 +94,7 @@
   // EFFIS "Data and Services" page (each dataset there has a sample working URL
   // with the exact LAYERS parameter to use).
   const EFFIS_WMS = 'https://maps.effis.emergency.copernicus.eu/gwis?';
+  const EFFIS_BRNT = 'https://maps.effis.emergency.copernicus.eu/effis?';
 
   const fwiLayer = L.tileLayer.wms(EFFIS_WMS, {
       layers: "ecmwf.fwi",
@@ -111,11 +105,11 @@
   });
 
   let currentBADate = "2026-08-02";
-  const burntLayer = L.tileLayer.wms(EFFIS_WMS, {
-    layers: "burnt_areas/mapserver?",
+  const burntLayer = L.tileLayer.wms(EFFIS_BRNT, {
+    layers: "modis.ba",
     format: "image/png",
     transparent: true,
-    version: "1.3.0",
+    version: "1.1.1",
     time: currentBADate
   });
 
