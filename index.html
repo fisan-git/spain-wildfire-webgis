@@ -55,19 +55,41 @@
 
 <div class="status" id="statusBox">Checking EFFIS server…</div>
 
-<div class="legend">
+<!-- <div class="legend">
   <strong>Fire Danger</strong>
   <div><span class="swatch" style="background:#2e7d32"></span> Low</div>
   <div><span class="swatch" style="background:#fdd835"></span> Moderate</div>
   <div><span class="swatch" style="background:#fb8c00"></span> High</div>
   <div><span class="swatch" style="background:#c62828"></span> Very High / Extreme</div>
+</div> -->
+
+<div id="fwi-legend" style="
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  background:white;
+  padding:10px;
+  border-radius:6px;
+  z-index:9999;
+  font-size:14px;
+  line-height:18px;
+">
+  <b>Fire Weather Index (FWI)</b><br>
+  <div><span style="background:#00FF00;width:20px;height:10px;display:inline-block;"></span> 0–5</div>
+  <div><span style="background:#FFFF00;width:20px;height:10px;display:inline-block;"></span> 5–10</div>
+  <div><span style="background:#FFA500;width:20px;height:10px;display:inline-block;"></span> 10–20</div>
+  <div><span style="background:#FF4500;width:20px;height:10px;display:inline-block;"></span> 20–30</div>
+  <div><span style="background:#FF0000;width:20px;height:10px;display:inline-block;"></span> 30–45</div>
+  <div><span style="background:#800000;width:20px;height:10px;display:inline-block;"></span> 45–60</div>
+  <div><span style="background:#800080;width:20px;height:10px;display:inline-block;"></span> 60+</div>
 </div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
   // Base map centered on Spain, zoomed to show the active fire regions
   const map = L.map('map', { zoomControl: true }).setView([40.2, -3.7], 7);
-
+  
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
     subdomains: 'abcd',
@@ -80,25 +102,21 @@
   // with the exact LAYERS parameter to use).
   const EFFIS_WMS = 'https://maps.effis.emergency.copernicus.eu/gwis?';
 
-  const fwiLayer = L.tileLayer.wms(
-  "https://maps.effis.emergency.copernicus.eu/gwis?",
-    {
+  const fwiLayer = L.tileLayer.wms(EFFIS_WMS, {
       layers: "ecmwf.fwi",
       format: "image/png",
       transparent: true,
       version: "1.1.1",
       time: "2026-08-02",
-      opacity: "50"
-    }
-  );
+  });
 
+  let currentBADate = "2026-08-02";
   const burntLayer = L.tileLayer.wms(EFFIS_WMS, {
-    layers: 'ba.hazard',      // Placeholder — confirm exact name via EFFIS data-and-services page
-    format: 'image/png',
+    layers: "burnt_areas",
+    format: "image/png",
     transparent: true,
-    version: '1.1.1',
-    opacity: 0.7,
-    attribution: 'EFFIS / Copernicus EMS'
+    version: "1.3.0",
+    time: currentBADate
   });
 
   fwiLayer.addTo(map);
@@ -121,8 +139,13 @@
   document.getElementById('toggleFwi').addEventListener('change', e => {
     e.target.checked ? fwiLayer.addTo(map) : map.removeLayer(fwiLayer);
   });
+  // document.getElementById('toggleBurnt').addEventListener('change', e => {
+  //   e.target.checked ? burntLayer.addTo(map) : map.removeLayer(burntLayer);
+  // });
   document.getElementById('toggleBurnt').addEventListener('change', e => {
-    e.target.checked ? burntLayer.addTo(map) : map.removeLayer(burntLayer);
+    const newDate = e.target.value;
+    map.removeLayer(burntLayer);
+    burntLayer.addTo(map);
   });
   document.getElementById('toggleFirms').addEventListener('change', e => {
     e.target.checked ? firmsLayer.addTo(map) : map.removeLayer(firmsLayer);
