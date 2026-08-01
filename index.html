@@ -78,7 +78,7 @@
   // Base EFFIS WMS endpoint. Layer names should be confirmed against the
   // EFFIS "Data and Services" page (each dataset there has a sample working URL
   // with the exact LAYERS parameter to use).
-  const EFFIS_WMS = 'https://maps.effis.emergency.copernicus.eu/effis';
+  const EFFIS_WMS = 'https://maps.effis.emergency.copernicus.eu/effis/wms';
 
   const fwiLayer = L.tileLayer.wms(EFFIS_WMS, {
     layers: 'ecmwf007.fwi',   // Fire Weather Index forecast — confirmed layer name
