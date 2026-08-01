@@ -134,11 +134,9 @@
       time: "2026-01-01/2026-08-01"
     })
   };
-  
-  L.control.layers(null, burntAreaLayers).addTo(map);
-    
-    
+
   fwiLayer.addTo(map);
+  L.control.layers(null, burntAreaLayers).addTo(map);
   //burntLayer.addTo(map);
 
   // --- NASA FIRMS active fire hotspots (VIIRS, last 24h) ---
