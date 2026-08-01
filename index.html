@@ -105,16 +105,50 @@
   });
 
   let currentBADate = "2026-07-31/2026-08-01";
-  const burntLayer = L.tileLayer.wms(EFFIS_BRNT, {
-    layers: "modis.ba",
-    format: "image/png",
-    transparent: true,
-    version: "1.1.1",
-    time: currentBADate
-  });
-
+  // const burntLayer = L.tileLayer.wms(EFFIS_BRNT, {
+  //   layers: "modis.ba",
+  //   format: "image/png",
+  //   transparent: true,
+  //   version: "1.1.1",
+  //   time: currentBADate
+  // });
+  
+  const burntAreaLayers = {
+      "Burnt Areas – Last 1 Day": L.tileLayer.wms(EFFIS_BRNT, {
+        layers: "modis.ba",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.1",
+        time: "2026-07-31/2026-08-01"
+      }),
+      "Burnt Areas – Last 7 Days": L.tileLayer.wms(EFFIS_BRNT, {
+        layers: "modis.ba7",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.1",
+        time: "2026-07-25/2026-08-01"
+      }),
+      "Burnt Areas – Last 30 Days": L.tileLayer.wms(EFFIS_BRNT, {
+        layers: "modis.ba30",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.1",
+        time: "2026-07-02/2026-08-01"
+      }),
+      "Burnt Areas – Fire Season": L.tileLayer.wms(EFFIS_BRNT, {
+        layers: "modis.bafs",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.1",
+        time: "2026-01-01/2026-08-01"
+      })
+    };
+    
+  L.control.layers(null, burntAreaLayers).addTo(map);
+    
+    
   fwiLayer.addTo(map);
-  burntLayer.addTo(map);
+  //burntLayer.addTo(map);
 
   // --- NASA FIRMS active fire hotspots (VIIRS, last 24h) ---
   // Requires a free FIRMS MAP_KEY: https://firms.modaps.eosdis.nasa.gov/api/map_key/
