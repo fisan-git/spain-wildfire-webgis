@@ -91,17 +91,6 @@
     }
   );
 
-
-  // const fwiLayer = L.tileLayer.wms(
-  // "https://maps.effis.emergency.copernicus.eu/effis/fwi/mapserver?",
-  //     {
-  //       layers: "fwi",
-  //       format: "image/png",
-  //       transparent: true,
-  //       version: "1.3.0"
-  //     }
-  //   );
-
   const burntLayer = L.tileLayer.wms(EFFIS_WMS, {
     layers: 'ba.hazard',      // Placeholder — confirm exact name via EFFIS data-and-services page
     format: 'image/png',
