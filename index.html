@@ -80,17 +80,17 @@
   // with the exact LAYERS parameter to use).
   const EFFIS_WMS = 'https://maps.effis.emergency.copernicus.eu/gwis?';
 
-  const fwiLayer = L.tileLayer.wms(EFFIS_WMS, {
-    layers: 'ecmwf.fwi',   // Fire Weather Index forecast — confirmed layer name
-    format: 'image/png',
-    transparent: true,
-    //service: 'wms',
-    version: '1.1.1',
-    //request: GetMap,
-    //opacity: 0.7,
-    time: "2026-08-02",
-    //attribution: 'EFFIS / Copernicus EMS'
-  });
+  const fwiLayer = L.tileLayer.wms(
+  "https://maps.effis.emergency.copernicus.eu/gwis?",
+    {
+      layers: "ecmwf.fwi",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.1",
+      time: "2026-08-02"
+    }
+  );
+
 
   // const fwiLayer = L.tileLayer.wms(
   // "https://maps.effis.emergency.copernicus.eu/effis/fwi/mapserver?",
