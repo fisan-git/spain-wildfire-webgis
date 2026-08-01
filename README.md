@@ -4,7 +4,7 @@ A lightweight, browser-based web GIS tool built to visualize live wildfire data 
 
 **[Live Demo →](https://fisan-git.github.io/spain-wildfire-webgis/)**
 
-![screenshot](screenshot.png)
+![screenshot](wildfire-banner.png)
 
 ## What it does
 
