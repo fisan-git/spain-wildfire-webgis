@@ -2,7 +2,7 @@
 
 A lightweight, browser-based web GIS tool built to visualize live wildfire data during the July 2026 Spain/France wildfire crisis (Ávila, Madrid, Castellón, and related fire complexes). Built as a single static HTML file — no backend, no build step, deployable anywhere.
 
-**[Live Demo →](https://yourusername.github.io/spain-wildfire-webgis/)**
+**[Live Demo →](https://fisan-git.github.io/spain-wildfire-webgis/)**
 
 ![screenshot](screenshot.png)
 
